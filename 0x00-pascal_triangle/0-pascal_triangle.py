@@ -14,6 +14,6 @@ def pascal_triangle(n):
  
         for j in range(i+1):
  
-            print([factorial(i)//(factorial(j)*factorial(i-j))], end=",")
+            print([factorial(i)//(factorial(j)*factorial(i-j))], end=" ")
  
         print()

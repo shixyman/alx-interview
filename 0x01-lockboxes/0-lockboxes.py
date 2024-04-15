@@ -1,21 +1,19 @@
-from collections import deque
-
 def canUnlockAll(boxes):
     num_boxes = len(boxes)
-    visited = [False] * num_boxes  # Keep track of visited boxes
-    visited[0] = True  # Mark the first box as visited
-    queue = deque([0])  # Start BFS from the first box
+    unlocked = [False] * num_boxes
+    unlocked[0] = True
 
-    while queue:
-        current_box = queue.popleft()
+    stack = [0]  # Start with the first box (index 0)
 
-        # Check all the keys in the current box
+    while stack:
+        current_box = stack.pop()
+
         for key in boxes[current_box]:
-            if key < num_boxes and not visited[key]:
-                visited[key] = True
-                queue.append(key)
+            if key < num_boxes and not unlocked[key]:
+                unlocked[key] = True
+                stack.append(key)
 
-    return all(visited)
+    return all(unlocked)
 
 # def canUnlockAll(boxes):
 #     num_boxes = len(boxes)

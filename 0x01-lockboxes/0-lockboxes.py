@@ -1,26 +1,26 @@
-def canUnlockAll(boxes):
-    # Initialize a set to keep track of unlocked boxes
-    unlocked_boxes = set()
-    
-    # Function to perform DFS on the graph of boxes and keys
-    def dfs(box):
-        # If the box is already unlocked, return True
-        if box in unlocked_boxes:
-            return True
-        
-        # Mark the current box as unlocked
-        unlocked_boxes.add(box)
-        
-        # Try to unlock all boxes that can be unlocked from the current box
-        for key in boxes[box]:
-            if not dfs(key):
-                return False
-        
-        return True
-    
-    # Start DFS from the first box
-    return dfs(0)
+from collections import deque
 
+def canUnlockAll(boxes):
+    n = len(boxes)  # Total number of boxes
+    
+    # Set to keep track of opened boxes
+    opened = set()
+    opened.add(0)  # Start with box 0 (the first box is unlocked)
+    
+    # Queue to manage boxes to visit
+    to_visit = deque([0])
+    
+    while to_visit:
+        current_box = to_visit.popleft()
+        
+        # Check keys in the current box
+        for key in boxes[current_box]:
+            if key < n and key not in opened:  # Ensure key is within range and not already opened
+                opened.add(key)
+                to_visit.append(key)
+    
+    # Check if all boxes can be opened
+    return len(opened) == n
 
 
 

@@ -1,35 +1,27 @@
 #!/usr/bin/python3
-'''LockBoxes Challenge'''
+"""
+The localboxes algorithm
+"""
 
 
 def canUnlockAll(boxes):
-    '''determines if all the boxes can be opened or not
-    Returns:
-        True: all boxes can be opened
-        False: not all boxes can be opened
-    '''
-    length = len(boxes)
-    keys = set()
-    opened_boxes = []
-    i = 0
+    """
+    @params: boxes list of lists (set representation of boxes)
+    Return: True if all can be opened and the reverse is true
+    """
+    position = 0
+    unlocked = {}
 
-    while i < length:
-        oldi = i
-        opened_boxes.append(i)
-        keys.update(boxes[i])
-        for key in keys:
-            if key != 0 and key < length and key not in opened_boxes:
-                i = key
-                break
-        if oldi != i:
-            continue
-        else:
-            break
-
-    for i in range(length):
-        if i not in opened_boxes and i != 0:
-            return False
-    return True
+    for box in boxes:
+        if len(box) == 0 or position == 0:
+            unlocked[position] = "always_unlocked"
+        for key in box:
+            if key < len(boxes) and key != position:
+                unlocked[key] = key
+        if len(unlocked) == len(boxes):
+            return True
+        position += 1
+    return False
 
 # def canUnlockAll(boxes):
 #     num_boxes = len(boxes)

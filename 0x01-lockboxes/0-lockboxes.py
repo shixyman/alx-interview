@@ -21,12 +21,6 @@ def canUnlockAll(boxes):
     # Start DFS from the first box
     return dfs(0)
 
-# Example usage
-boxes = [
-    [1, 2], # Box 0 can unlock boxes 1 and 2
-    [2],     # Box 1 can unlock box 2
-    []       # Box 2 has no keys
-]
 
 
 

@@ -1,26 +1,20 @@
-from collections import deque
-
 def canUnlockAll(boxes):
-    n = len(boxes)  # Total number of boxes
-    
-    # Set to keep track of opened boxes
-    opened = set()
-    opened.add(0)  # Start with box 0 (the first box is unlocked)
-    
-    # Queue to manage boxes to visit
-    to_visit = deque([0])
-    
-    while to_visit:
-        current_box = to_visit.popleft()
-        
-        # Check keys in the current box
-        for key in boxes[current_box]:
-            if key < n and key not in opened:  # Ensure key is within range and not already opened
-                opened.add(key)
-                to_visit.append(key)
-    
-    # Check if all boxes can be opened
-    return len(opened) == n
+  """
+  :type boxes: List[List[int]]
+  :rtype: bool
+  """
+  visited = set([0])
+  queue = [0]
+  while queue:
+    box = queue.pop(0)
+    for key in boxes[box]:
+      if key not in visited:
+        visited.add(key)
+        queue.append(key)
+  return len(visited) == len(boxes)
+
+
+
 
 
 

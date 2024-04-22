@@ -26,8 +26,14 @@ def minOperations(n: int) -> int:
     if n == 1:
         return 0
 
-    for i in range(2, int(n**0.5) + 1):
-        if n % i == 0:
-            return i + minOperations(n // i)
+    operations = 0
+    divisor = 2
 
-    return n
+    while n > 1:
+        if n % divisor == 0:
+            operations += divisor
+            n //= divisor
+        else:
+            divisor += 1
+
+    return operations

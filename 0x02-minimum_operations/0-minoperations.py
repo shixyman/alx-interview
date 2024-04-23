@@ -22,16 +22,18 @@ needed to result in exactly n H characters in the file.
 #     return operations[n] if operations[n] != float('inf') else 0
 
 
-def minOperations(n):
+def minOperations(n: int) -> int:
     if n == 1:
         return 0
 
-    dp = [float('inf')] * (n + 1)
-    dp[1] = 0
+    operations = 0
+    divisor = 2
 
-    for i in range(2, n + 1):
-        for j in range(1, i):
-            if i % j == 0:
-                dp[i] = min(dp[i], dp[j] + i // j)
+    while n > 1:
+        if n % divisor == 0:
+            operations += divisor
+            n //= divisor
+        else:
+            divisor += 1
 
-    return dp[n] if dp[n] != float('inf') else 0
+    return operations

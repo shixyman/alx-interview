@@ -46,41 +46,43 @@
 
 import sys
 
-def compute_metrics():
+def print_statistics(total_file_size, status_code_counts):
+    print("Total file size:", total_file_size)
+    for status_code, count in sorted(status_code_counts.items()):
+        print(f"{status_code}: {count}")
+
+def process_input():
     total_file_size = 0
     status_code_counts = {}
 
+    line_count = 0
     try:
-        line_count = 0
         for line in sys.stdin:
-            # Remove leading/trailing whitespaces and split the line by space
-            parts = line.strip().split()
+            line = line.strip()
 
-            # Check if the line matches the expected format
-            if len(parts) >= 7 and parts[2] == 'GET' and parts[3].startswith('/projects/') and parts[4].startswith('HTTP/1.') and parts[5].isdigit() and parts[6].isdigit():
-                file_size = int(parts[6])
-                total_file_size += file_size
+            # Parse the line and extract the relevant information
+            parts = line.split()
+            if len(parts) < 7:
+                continue
+            ip_address = parts[0]
+            status_code = parts[-3]
+            file_size = int(parts[-2])
 
-                status_code = int(parts[5])
+            # Update the total file size
+            total_file_size += file_size
+
+            # Update the status code counts
+            if status_code.isdigit():
+                status_code = int(status_code)
                 status_code_counts[status_code] = status_code_counts.get(status_code, 0) + 1
 
             line_count += 1
 
             # Print statistics every 10 lines
             if line_count % 10 == 0:
-                print("Total file size:", total_file_size)
-                print("Number of lines by status code:")
-                for status_code in sorted(status_code_counts):
-                    print(f"{status_code}: {status_code_counts[status_code]}")
-                print()
-
+                print_statistics(total_file_size, status_code_counts)
     except KeyboardInterrupt:
-        # Print final statistics upon keyboard interruption
-        print("Total file size:", total_file_size)
-        print("Number of lines by status code:")
-        for status_code in sorted(status_code_counts):
-            print(f"{status_code}: {status_code_counts[status_code]}")
-        print()
+        print_statistics(total_file_size, status_code_counts)
 
-if __name__ == "__main__":
-    compute_metrics()
+# Start processing the input
+process_input()

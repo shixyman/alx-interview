@@ -60,15 +60,12 @@ def validUTF8(index: int = None, page_size: int = 10) -> Dict[str, Any]:
         assert index <= len(dataset), "Index is out of range."
 
     current_page = dataset[index:index + page_size]
-    
-    # Adjust the current page if there are deleted rows
-    if len(current_page) < page_size:
-        next_index = index + page_size
-        while len(current_page) < page_size and next_index < len(dataset):
-            current_page += [dataset[next_index]]
-            next_index += 1
-    else:
-        next_index = index + page_size
+
+    # Check if any rows were deleted between index and index + page_size
+    while len(current_page) < page_size and index + len(current_page) < len(dataset):
+        current_page += [dataset[index + len(current_page)]]
+
+    next_index = index + len(current_page)
 
     return {
         'index': index,

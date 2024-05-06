@@ -61,11 +61,7 @@ def validUTF8(index: int = None, page_size: int = 10) -> Dict[str, Any]:
 
     current_page = dataset[index:index + page_size]
 
-    # Check if any rows were deleted between index and index + page_size
-    while len(current_page) < page_size and index + len(current_page) < len(dataset):
-        current_page += [dataset[index + len(current_page)]]
-
-    next_index = index + len(current_page)
+    next_index = index + page_size
 
     return {
         'index': index,

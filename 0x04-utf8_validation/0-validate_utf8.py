@@ -41,9 +41,11 @@
 #     # All checks passed, the data represents a valid UTF-8 encoding
 #     return True
 
+from typing import List, Dict, Any
+
 def get_hyper_index(index: int = None, page_size: int = 10) -> Dict[str, Any]:
     assert index is None or (isinstance(index, int) and index >= 0), "Index must be None or a non-negative integer."
-    assert isinstance(page_size, int) and page_size > 0, "Page size must be a positive integer."
+    assert isinstance(page_size, int) and page_size > 0, "Page size must be an integer greater than 0."
 
     dataset = []  # List to store the dataset
 
@@ -57,12 +59,12 @@ def get_hyper_index(index: int = None, page_size: int = 10) -> Dict[str, Any]:
     else:
         assert index <= len(dataset), "Index is out of range."
 
-    next_index = index + page_size
-    data = dataset[index:next_index]
+    current_page = dataset[index:index + page_size]
+    next_index = index + len(current_page)
 
     return {
         'index': index,
         'next_index': next_index,
-        'page_size': page_size,
-        'data': data
+        'page_size': len(current_page),
+        'data': current_page
     }

@@ -41,9 +41,9 @@
 #     # All checks passed, the data represents a valid UTF-8 encoding
 #     return True
 
-from typing import List, Dict, Any
+from typing import Dict, Any
 
-def get_hyper_index(index: int = None, page_size: int = 10) -> Dict[str, Any]:
+def validUTF8(index: int = None, page_size: int = 10) -> Dict[str, Any]:
     assert index is None or (isinstance(index, int) and index >= 0), "Index must be None or a non-negative integer."
     assert isinstance(page_size, int) and page_size > 0, "Page size must be an integer greater than 0."
 
@@ -60,7 +60,15 @@ def get_hyper_index(index: int = None, page_size: int = 10) -> Dict[str, Any]:
         assert index <= len(dataset), "Index is out of range."
 
     current_page = dataset[index:index + page_size]
-    next_index = index + len(current_page)
+    
+    # Adjust the current page if there are deleted rows
+    if len(current_page) < page_size:
+        next_index = index + page_size
+        while len(current_page) < page_size and next_index < len(dataset):
+            current_page += [dataset[next_index]]
+            next_index += 1
+    else:
+        next_index = index + page_size
 
     return {
         'index': index,

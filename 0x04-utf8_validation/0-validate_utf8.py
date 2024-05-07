@@ -1,77 +1,40 @@
 #!/usr/bin/python3
+"""Determines a valid UTF-8 encoding"""
 
 
 def validUTF8(data):
-    # Variable to keep track of the number
-    # of bytes remaining for the current character
-    remaining_bytes = 0
+    """
+    bit1 checks if significant byte is 1
+    bit2 checks if second significant byte is 0
+    nbytes keeps track of how many 1s before 0 occurs
+    data represented by a list of integers to check
+    """
 
-    for byte in data:
-        # Check if the byte is a continuation byte (starts with '10')
-        if byte >> 6 == 0b10:
-            # If there are no bytes remaining, or the byte
-            # is not a valid continuation byte, return False
-            if remaining_bytes == 0:
-                return False
-            # Decrement the count of remaining bytes
-            remaining_bytes -= 1
-        else:
-            # If there are remaining bytes, it means a new character
-            # has started before completing the previous one
-            if remaining_bytes > 0:
-                return False
+    bit1 = 1 << 7
+    bit2 = 1 << 6
+    nbytes = 0
 
-            # Determine the number of bytes for the current character
-            if byte >> 7 == 0b0:
-                # Single-byte character
-                remaining_bytes = 0
-            elif byte >> 5 == 0b110:
-                # Two-byte character
-                remaining_bytes = 1
-            elif byte >> 4 == 0b1110:
-                # Three-byte character
-                remaining_bytes = 2
-            elif byte >> 3 == 0b11110:
-                # Four-byte character
-                remaining_bytes = 3
-            else:
-                # Invalid starting byte
-                return False
+    if not data or len(data) == 0:
+        return True
 
-    # If there are remaining bytes, it means a character is not complete
-    if remaining_bytes > 0:
-        return False
+    for num in data:
+        bit = 1 << 7
+        if nbytes == 0:
+            while (bit & num):
+                nbytes += 1
+                bit = bit >> 1
 
-    # All checks passed, the data represents a valid UTF-8 encoding
-    return True
-
-
-def validUTF8(data):
-    # Number of bytes in the current UTF-8 character
-    num_bytes = 0
-
-    for byte in data:
-        # Check the most significant bit (MSB) of the current byte
-        if num_bytes == 0:
-            # If the MSB is 0, it's a single-byte character
-            if (byte >> 7) == 0b0:
+            if nbytes == 0:
                 continue
-            # If the MSB is 1, count the number of
-            # leading 1s to determine the number of bytes in the character
-            elif (byte >> 5) == 0b110:
-                num_bytes = 1
-            elif (byte >> 4) == 0b1110:
-                num_bytes = 2
-            elif (byte >> 3) == 0b11110:
-                num_bytes = 3
-            else:
+            if nbytes == 1 or nbytes > 4:
                 return False
         else:
-            # Check if the current byte starts with 10 (continuation byte)
-            if (byte >> 6) != 0b10:
+
+            if not (num & bit1 and not (num & bit2)):
                 return False
+        nbytes -= 1
 
-            num_bytes -= 1
-
-    # If there are remaining bytes, it's an invalid encoding
-    return num_bytes == 0
+    if nbytes:
+        return False
+    else:
+        return True

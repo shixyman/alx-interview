@@ -41,35 +41,32 @@
 #     # All checks passed, the data represents a valid UTF-8 encoding
 #     return True
 
-from typing import Dict, Any
+def validUTF8(data):
+    # Number of bytes in the current UTF-8 character
+    num_bytes = 0
 
-def validUTF8(index: int = None, page_size: int = 10) -> Dict[str, Any]:
-    assert index is None or (isinstance(index, int) and index >= 0), "Index must be None or a non-negative integer."
-    assert isinstance(page_size, int) and page_size > 0, "Page size must be an integer greater than 0."
+    for byte in data:
+        # Check the most significant bit (MSB) of the current byte
+        if num_bytes == 0:
+            # If the MSB is 0, it's a single-byte character
+            if (byte >> 7) == 0b0:
+                continue
 
-    dataset = []  # List to store the dataset
+            # If the MSB is 1, count the number of leading 1s to determine the number of bytes in the character
+            elif (byte >> 5) == 0b110:
+                num_bytes = 1
+            elif (byte >> 4) == 0b1110:
+                num_bytes = 2
+            elif (byte >> 3) == 0b11110:
+                num_bytes = 3
+            else:
+                return False
+        else:
+            # Check if the current byte starts with 10 (continuation byte)
+            if (byte >> 6) != 0b10:
+                return False
 
-    # Read the CSV file and populate the dataset list
-    with open('your_csv_file.csv', 'r') as file:
-        csv_reader = csv.DictReader(file)
-        dataset = list(csv_reader)
+            num_bytes -= 1
 
-    if index is None:
-        index = 0
-    else:
-        assert index <= len(dataset), "Index is out of range."
-
-    current_page = dataset[index:index + page_size]
-
-    # Check if any rows were deleted between index and index + page_size
-    while len(current_page) < page_size and index + len(current_page) < len(dataset):
-        current_page += [dataset[index + len(current_page)]]
-
-    next_index = index + len(current_page)
-
-    return {
-        'index': index,
-        'next_index': next_index,
-        'page_size': len(current_page),
-        'data': current_page
-    }
+    # If there are remaining bytes, it's an invalid encoding
+    return num_bytes == 0

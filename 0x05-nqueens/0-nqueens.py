@@ -5,51 +5,39 @@ A program that solves the N queens problem
 """
 import sys
 
+
 def is_safe(board, row, col, N):
     # Check if there is a queen in the same column
     for i in range(row):
-        if board[i][col] == 'Q':
+        if board[i] == col:
             return False
 
-    # Check if there is a queen in the upper-left diagonal
-    i, j = row, col
-    while i >= 0 and j >= 0:
-        if board[i][j] == 'Q':
+        # Check if there is a queen in the diagonal
+        if board[i] - i == col - row or board[i] + i == col + row:
             return False
-        i -= 1
-        j -= 1
-
-    # Check if there is a queen in the upper-right diagonal
-    i, j = row, col
-    while i >= 0 and j < N:
-        if board[i][j] == 'Q':
-            return False
-        i -= 1
-        j += 1
 
     return True
 
-def solve_nqueens(board, row, N):
+
+def solve_nqueens(board, row, N, solutions):
     if row == N:
-        # All queens are placed, print the solution
-        print_solution(board, N)
+        # Add the solution to the list
+        solutions.append(board[:])
         return
 
     for col in range(N):
         if is_safe(board, row, col, N):
             # Place the queen at the current position
-            board[row][col] = 'Q'
+            board[row] = col
 
             # Recur for the next row
-            solve_nqueens(board, row + 1, N)
+            solve_nqueens(board, row + 1, N, solutions)
 
-            # Backtrack and remove the queen from the current position
-            board[row][col] = '.'
 
-def print_solution(board, N):
-    for row in board:
-        print(' '.join(row))
-    print()
+def format_solution(solution):
+    formatted = [[row, col] for row, col in enumerate(solution)]
+    return formatted
+
 
 def main():
     # Check the number of arguments
@@ -70,10 +58,17 @@ def main():
         sys.exit(1)
 
     # Create an empty chessboard
-    board = [['.' for _ in range(N)] for _ in range(N)]
+    board = [-1] * N
 
     # Solve the N-queens problem
-    solve_nqueens(board, 0, N)
+    solutions = []
+    solve_nqueens(board, 0, N, solutions)
+
+    # Format and print the solutions
+    for solution in solutions:
+        formatted_solution = format_solution(solution)
+        print(formatted_solution)
+
 
 if __name__ == '__main__':
     main()

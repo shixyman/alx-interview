@@ -1,62 +1,36 @@
 #!/usr/bin/node
 const request = require('request');
-/**
- *  @param argv
- *  @returns string
- */
 
-let arg = process.argv.slice(2);
-let url = 'https://swapi-api.alx-tools.com/api/films/'+ arg[0];
+const API_URL = 'https://swapi-api.hbtn.io/api';
 
-let characters =[];
-let characterNames =[];
+if (process.argv.length > 2) {
+  const movieId = process.argv[2];
+  const filmUrl = `${API_URL}/films/${movieId}/`;
 
-/**
- * uses the promises api
- */
-
-const getCharacters =  async () => {
-    await new Promise( resolve => request(url , (err, res, body) => {
-        if (err || res.statusCode !== 200) {
-            console.error('error', err, '| statusCode' , res.statusCode)
-        }else {
-            let chars = JSON.parse(body);
-          characters = chars.characters;
-          resolve();
-      }
-    }))
-};
-
-const getCharactersNames = async () => {
-    if (characters.length > 0) {
-        for (let character in characters) {
-            await new Promise ( resolve => request(character, (err, res, body) => {
-                if (err || res.statusCode !== 200) {
-                    console.error('error', err ,'| statusCode' , res.statusCode)
-                }else {
-                  let person = JSON.parse(body);
-                  characterNames.push(person.name);
-                  resolve();
-                }
-            }))
-        }
-    } else {
-        console.error('Error: Got no Characters for check your internet connection other');
+  request(filmUrl, (err, _, body) => {
+    if (err) {
+      console.log(err);
+      process.exit(1);
     }
-};
 
-const getNames = async () => {
-    await getCharacters()
-    await getCharactersNames()
+    const charactersUrls = JSON.parse(body).characters;
+    const charactersNames = [];
 
-    //print the names
-    for(let charName in characterNames) {
-        if (charName === characterNames[characterNames.length - 1]){
-            process.stdout.write(charName);
-        }else{
-            process.stdout.write(charName + '\n');
+    charactersUrls.forEach((characterUrl) => {
+      request(characterUrl, (characterErr, __, characterBody) => {
+        if (characterErr) {
+          console.log(`Error fetching character data: ${characterErr}`);
+          process.exit(1);
         }
-    }
-};
 
-getNames();
+        const characterName = JSON.parse(characterBody).name;
+        charactersNames.push(characterName);
+
+        if (charactersNames.length === charactersUrls.length) {
+          console.log(charactersNames.join('\n'));
+        }
+      });
+    });
+  });
+}
+

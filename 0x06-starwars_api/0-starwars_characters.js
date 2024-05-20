@@ -5,42 +5,32 @@ const API_URL = 'https://swapi-api.hbtn.io/api';
 
 if (process.argv.length > 2) {
   const movieId = process.argv[2];
-  const filmUrl = `${API_URL}/films/${movieId}/`;
+  const filmURL = `${API_URL}/films/${movieId}/`;
 
-  request(filmUrl, (error, response, body) => {
-    if (error) {
-      console.log(error);
+  request(filmURL, (err, _, body) => {
+    if (err) {
+      console.log(err);
       process.exit(1);
     }
 
-    if (response.statusCode === 200) {
-      const charactersUrls = JSON.parse(body).characters;
-      const charactersNames = [];
+    const charactersURL = JSON.parse(body).characters;
+    const charactersNames = [];
 
-      charactersUrls.forEach((characterUrl) => {
-        request(characterUrl, (characterError, characterResponse, characterBody) => {
-          if (characterError) {
-            console.log(`Error fetching character data: ${characterError}`);
-            process.exit(1);
-          }
+    charactersURL.forEach((characterURL) => {
+      request(characterURL, (promiseErr, __, charactersReqBody) => {
+        if (promiseErr) {
+          console.log(promiseErr);
+          process.exit(1);
+        }
 
-          if (characterResponse.statusCode === 200) {
-            const characterName = JSON.parse(characterBody).name;
-            charactersNames.push(characterName);
-          } else {
-            console.log(`Error fetching character data: ${characterResponse.statusCode}`);
-            process.exit(1);
-          }
+        const characterData = JSON.parse(charactersReqBody);
+        const characterName = characterData.name;
+        charactersNames.push(characterName);
 
-          // Check if all characters have been fetched
-          if (charactersNames.length === charactersUrls.length) {
-            console.log(charactersNames.join('\n'));
-          }
-        });
+        if (charactersNames.length === charactersURL.length) {
+          console.log(charactersNames.join('\n'));
+        }
       });
-    } else {
-      console.log(`Error fetching movie data: ${response.statusCode}`);
-      process.exit(1);
-    }
+    });
   });
 }

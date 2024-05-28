@@ -6,10 +6,12 @@ matrix (list of lists): The input 2D matrix to be rotated.
 Returns:
 None
 """
-# Transpose the matrix
-for i in range(len(matrix)):
-    for j in range(i, len(matrix)):
-        matrix[j][i], matrix[i][j] = matrix[i][j], matrix[j][i]
-# Reverse each row in the matrix
-for row in matrix:
-    row.reverse()
+    # Step 1: Transpose the matrix
+    for i in range(len(matrix)):
+        for j in range(i, len(matrix[i])):
+            matrix[j][i], matrix[i][j] = matrix[i][j], matrix[j][i]
+    
+    # Step 2: Reverse each row
+    for i in range(len(matrix)):
+        matrix[i] = matrix[i][::-1]
+

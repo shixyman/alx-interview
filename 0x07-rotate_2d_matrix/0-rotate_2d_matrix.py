@@ -1,11 +1,15 @@
+#!/usr/bin/python3
+'''2D matrix'''
+
+
 def rotate_2d_matrix(matrix):
-"""
-Rotates a given 2D matrix 90 degrees clockwise in-place.
-Args:
-matrix (list of lists): The input 2D matrix to be rotated.
-Returns:
-None
-"""
+    """
+    Rotates a given 2D matrix 90 degrees clockwise in-place.
+    Args:
+    matrix (list of lists): The input 2D matrix to be rotated.
+    Returns:
+    None
+    """
     left, right = 0, len(matrix) - 1
 
     while left < right:

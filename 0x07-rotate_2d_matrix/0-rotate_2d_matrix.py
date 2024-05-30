@@ -6,15 +6,20 @@ matrix (list of lists): The input 2D matrix to be rotated.
 Returns:
 None
 """
-    n = len(matrix)  # Get the size of the matrix (n x n)
-    
-    # Step 1: Transpose the matrix
-    for i in range(n):
-        for j in range(i, n):
-            # Swap elements at (i, j) and (j, i)
-            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
-    
-    # Step 2: Reverse each row
-    for i in range(n):
-        # Reverse the current row
-        matrix[i] = matrix[i][::-1]
+    left, right = 0, len(matrix) - 1
+
+    while left < right:
+        for i in range(right - left):
+            top, bottom = left, right
+            # save topleft  value
+            topLeft = matrix[top][left + i]
+            # move bottom left to top left
+            matrix[top][left + i] = matrix[bottom - i][left]
+            # move bottom right to bottom left
+            matrix[bottom - i][left] = matrix[bottom][right - i]
+            # move top right to bottom right
+            matrix[bottom][right - i] = matrix[top + i][right]
+            # move top left to top right
+            matrix[top + i][right] = topLeft
+        right -= 1
+        left += 1

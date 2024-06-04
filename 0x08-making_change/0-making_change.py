@@ -16,21 +16,31 @@ def makeChange(coins, total):
              If it's not possible to meet the total, returns -1.
     """
     # Initialize the table with a maximum possible value
-    dp = [float('inf')] * (total + 1)
+    if total <= 0:
+        return 0
+    if coins == [] or coins is None:
+        return -1
+    try:
+        n = coins.index(total)
+        return 1
+    except ValueError:
+        pass
 
-    # Base case: 0 coins are needed to make 0 total
-    dp[0] = 0
-
-    # Iterate through the amounts from 1 to the target total
-    for amount in range(1, total + 1):
-        # Iterate through the available coins
-        for coin in coins:
-            # If the current coin value is less than
-            # or equal to the current amount
-            if coin <= amount:
-                # Update the minimum number of
-                # coins needed for the current amount
-                dp[amount] = min(dp[amount], dp[amount - coin] + 1)
-
-    # If the target total cannot be met, return -1
-    return dp[total] if dp[total] != float('inf') else -1
+    coins.sort(reverse=True)
+    coin_count = 0
+    for i in coins:
+        if total % i == 0:
+            coin_count += int(total / i)
+            return coin_count
+        if total - i >= 0:
+            if int(total / i) > 1:
+                coin_count += int(total / i)
+                total = total % i
+            else:
+                coin_count += 1
+                total -= i
+                if total == 0:
+                    break
+    if total > 0:
+        return -1
+    return coin_count

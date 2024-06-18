@@ -2,31 +2,26 @@
 """Prime Game Interview Challenge"""
 
 
-def makeChange(coins, total):
+def isWinner(x, nums):
+    """Determines the winner of a prime game session with `x` rounds.
     """
-    Determines the fewest number of coins needed to meet a given amount total.
-    
-    Args:
-        coins (list): A list of the values of the coins in your possession.
-        total (int): The target amount.
-    
-    Returns:
-        int: The fewest number of coins needed to meet the total. If the total cannot be met, returns -1.
-    """
-    # Initialize the table with a maximum possible value
-    dp = [float('inf')] * (total + 1)
-    
-    # Base case: 0 coins are needed to make 0 total
-    dp[0] = 0
-    
-    # Iterate through the amounts from 1 to the target total
-    for amount in range(1, total + 1):
-        # Iterate through the available coins
-        for coin in coins:
-            # If the current coin value is less than or equal to the current amount
-            if coin <= amount:
-                # Update the minimum number of coins needed for the current amount
-                dp[amount] = min(dp[amount], dp[amount - coin] + 1)
-    
-    # If the target total cannot be met, return -1
-    return dp[total] if dp[total] != float('inf') else -1
+    if x < 1 or not nums:
+        return None
+    marias_wins, bens_wins = 0, 0
+    # generate primes with a limit of the maximum number in nums
+    n = max(nums)
+    primes = [True for _ in range(1, n + 1, 1)]
+    primes[0] = False
+    for i, is_prime in enumerate(primes, 1):
+        if i == 1 or not is_prime:
+            continue
+        for j in range(i + i, n + 1, i):
+            primes[j - 1] = False
+    # filter the number of primes less than n in nums for each round
+    for _, n in zip(range(x), nums):
+        primes_count = len(list(filter(lambda x: x, primes[0: n])))
+        bens_wins += primes_count % 2 == 0
+        marias_wins += primes_count % 2 == 1
+    if marias_wins == bens_wins:
+        return None
+    return 'Maria' if marias_wins > bens_wins else 'Ben'
